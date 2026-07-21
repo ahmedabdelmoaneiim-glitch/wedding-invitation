@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء دعوة جديدة - نفرح</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background: #f4f6f8; padding: 20px; text-align: right; }
+        .container { max-width: 500px; margin: 0 auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        h2 { color: #d63384; text-align: center; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; outline: none; }
+        button { width: 100%; background: #ff4d6d; color: white; padding: 14px; border: none; border-radius: 10px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
+        .result { display:none; margin-top:20px; padding:15px; background:#e8f5e9; border-radius:10px; text-align:center; word-break:break-all; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>تفاصيل الدعوة 💌</h2>
+        
+        <div class="form-group">
+            <label>رابط الدعوة المخصص (بالإنجليزي بدون مسافات):</label>
+            <input type="text" id="slug" placeholder="مثال: ahmed-and-hames">
+        </div>
+
+        <div class="form-group">
+            <label>أسماء العروسين:</label>
+            <input type="text" id="groom_bride_names" placeholder="أحمد و همس">
+        </div>
+
+        <div class="form-group">
+            <label>التاريخ والموعد:</label>
+            <input type="text" id="event_date" placeholder="الخميس 11/04/2026 - الساعة 8 مساءً">
+        </div>
+
+        <div class="form-group">
+            <label>مكان الحفل (اسم القاعة/الفندق):</label>
+            <input type="text" id="venue" placeholder="فندق لاجونا فيستا">
+        </div>
+
+        <div class="form-group">
+            <label>رابط الخريطة (Google Maps):</label>
+            <input type="text" id="map_link" placeholder="https://maps.google.com/...">
+        </div>
+
+        <div class="form-group">
+            <label>رابط ملف الأغنية (MP3):</label>
+            <input type="text" id="music_url" value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+        </div>
+
+        <div class="form-group">
+            <label>اختيار القالب (الثيم):</label>
+            <select id="theme">
+                <option value="pink">وردي رومانسي 💕</option>
+                <option value="blue">أزرق كلاسيكي 💙</option>
+                <option value="dark">أسود وذهبي فخم 🖤</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>كلمة السر لفتح الدعوة:</label>
+            <input type="text" id="passcode" value="love">
+        </div>
+
+        <div class="form-group">
+            <label>قصة حبنا / رسالة للضيوف:</label>
+            <textarea id="story_text" rows="3" placeholder="أجمل يوم في حياتنا حابين نشارككم فيه..."></textarea>
+        </div>
+
+        <button onclick="saveInvitation()">حفظ ونشر الدعوة 🚀</button>
+
+        <div class="result" id="resultBox">
+            <p><strong>تم إنشاء الدعوة بنجاح! 🎉</strong></p>
+            <br>
+            <a id="invLink" href="#" target="_blank" style="color:#2e7d32; font-weight:bold;">فتح رابط الدعوة</a>
+        </div>
+    </div>
+
+    <script>
+        // الرابط والمفتاح الجداد الخاصين بك
+        const SUPABASE_URL = "https://dwogzofnirelsuzmcwzl.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_bX0oxfKtKrvzMIP_JSFB6w_fKy9SeNg";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function saveInvitation() {
+            const slug = document.getElementById('slug').value.trim().toLowerCase();
+            const names = document.getElementById('groom_bride_names').value;
+            const date = document.getElementById('event_date').value;
+            const venue = document.getElementById('venue').value;
+            const map = document.getElementById('map_link').value;
+            const music = document.getElementById('music_url').value;
+            const theme = document.getElementById('theme').value;
+            const pass = document.getElementById('passcode').value;
+            const story = document.getElementById('story_text').value;
+
+            if(!slug || !names) {
+                alert("برجاء إدخال رابط الدعوة وأسماء العروسين!");
+                return;
+            }
+
+            const { data, error } = await _supabase
+                .from('invitations')
+                .insert([
+                    { 
+                        slug: slug, 
+                        groom_bride_names: names, 
+                        event_date: date, 
+                        venue: venue, 
+                        map_link: map, 
+                        music_url: music, 
+                        theme: theme, 
+                        passcode: pass, 
+                        story_text: story 
+                    }
+                ]);
+
+            if(error) {
+                alert("حدث خطأ أثناء الحفظ! تأكد من إنشاء الجدول في Supabase أولاً أو قد يكون اسم الرابط مستخدم.");
+                console.error(error);
+            } else {
+                const finalLink = `${window.location.origin}/invitation.html?id=${slug}`;
+                document.getElementById('invLink').href = finalLink;
+                document.getElementById('invLink').innerText = finalLink;
+                document.getElementById('resultBox').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
