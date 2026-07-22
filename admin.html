@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - دعوات زفاف</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📊 لوحة التحكم</h1>
+        <p style="text-align: center; color: #8a7a72;">إدارة الطلبات والعملاء</p>
+
+        <!-- إحصائيات سريعة -->
+        <div class="admin-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalOrders">٠</div>
+                <div>إجمالي الطلبات</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingOrders">٠</div>
+                <div>قيد التنفيذ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedOrders">٠</div>
+                <div>منفذة</div>
+            </div>
+        </div>
+
+        <!-- جدول الطلبات -->
+        <h2>📋 قائمة الطلبات</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>الحالة</th>
+                        <th>الباقة</th>
+                        <th>التاريخ</th>
+                        <th>العروسين</th>
+                        <th>#</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTable">
+                    <!-- هتظهر هنا الطلبات تلقائياً -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- نموذج إضافة طلب يدوي (للاختبار) -->
+        <h2 style="margin-top: 30px;">➕ إضافة طلب تجريبي</h2>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" id="testGroom" placeholder="اسم العريس" style="flex:1; padding:10px; border-radius:12px; border:2px solid #e8ddd8;">
+            <input type="text" id="testBride" placeholder="اسم العروسة" style="flex:1; padding:10px; border-radius:12px; border:2px solid #e8ddd8;">
+            <button class="btn" onclick="addTestOrder()">أضف طلب</button>
+        </div>
+        <button class="btn" onclick="clearAllOrders()" style="background: #ccc; box-shadow: none; margin-top:10px;">🗑️ مسح الكل</button>
+
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0e0d8;">
+            <a href="index.html" style="color: #d4a373; text-decoration: none;">⬅️ العودة للصفحة الرئيسية</a>
+        </div>
+    </div>
+
+    <script>
+        // تحميل الطلبات من localStorage
+        function loadOrders() {
+            const orders = JSON.parse(localStorage.getItem('weddingOrders')) || [];
+            const tbody = document.getElementById('ordersTable');
+            tbody.innerHTML = '';
+            
+            if (orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#8a7a72;">لا توجد طلبات حتى الآن</td></tr>';
+                document.getElementById('totalOrders').textContent = '٠';
+                document.getElementById('pendingOrders').textContent = '٠';
+                document.getElementById('completedOrders').textContent = '٠';
+                return;
+            }
+            
+            let pending = 0, completed = 0;
+            orders.forEach((order, index) => {
+                const status = order.status || 'قيد التنفيذ';
+                if (status === 'قيد التنفيذ') pending++;
+                else completed++;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <select onchange="updateOrder(${index}, this.value)" style="padding:5px; border-radius:8px; border:1px solid #e8ddd8;">
+                            <option value="قيد التنفيذ" ${status === 'قيد التنفيذ' ? 'selected' : ''}>⏳ قيد التنفيذ</option>
+                            <option value="منفذة" ${status === 'منفذة' ? 'selected' : ''}>✅ منفذة</option>
+                        </select>
+                    </td>
+                    <td>${order.package}</td>
+                    <td>${order.date || 'غير محدد'}</td>
+                    <td>${order.groom} + ${order.bride}</td>
+                    <td><button onclick="deleteOrder(${index})" style="background:#fde8e8; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer;">✕</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            document.getElementById('totalOrders').textContent = orders.length;
+            document.getElementById('pendingOrders').textContent = pending;
+            document.getElementById('completedOrders').textContent = completed;
+        }
+
+        // تحديث حالة طلب
+        function updateOrder(index, newStatus) {
+            const orders = JSON.parse(localStorage.getItem('weddingOrders')) || [];
+            orders[index].status = newStatus;
+            localStorage.setItem('weddingOrders', JSON.stringify(orders));
+            loadOrders();
+        }
+
+        // حذف طلب
+        function deleteOrder(index) {
+            if (confirm('متأكد من حذف هذا الطلب؟')) {
+                const orders = JSON.parse(localStorage.getItem('weddingOrders')) || [];
+                orders.splice(index, 1);
+                localStorage.setItem('weddingOrders', JSON.stringify(orders));
+                loadOrders();
+            }
+        }
+
+        // إضافة طلب تجريبي
+        function addTestOrder() {
+            const groom = document.getElementById('testGroom').value.trim();
+            const bride = document.getElementById('testBride').value.trim();
+            if (!groom || !bride) {
+                alert('من فضلك أدخل اسم العريس والعروسة');
+                return;
+            }
+            
+            const orders = JSON.parse(localStorage.getItem('weddingOrders')) || [];
+            orders.push({
+                groom: groom,
+                bride: bride,
+                package: 'كلاسيكية',
+                date: new Date().toLocaleDateString('ar-EG'),
+                status: 'قيد التنفيذ'
+            });
+            localStorage.setItem('weddingOrders', JSON.stringify(orders));
+            document.getElementById('testGroom').value = '';
+            document.getElementById('testBride').value = '';
+            loadOrders();
+        }
+
+        // مسح كل الطلبات
+        function clearAllOrders() {
+            if (confirm('متأكد من مسح جميع الطلبات؟')) {
+                localStorage.removeItem('weddingOrders');
+                loadOrders();
+            }
+        }
+
+        // تحميل الطلبات عند فتح الصفحة
+        loadOrders();
+    </script>
+</body>
+</html>

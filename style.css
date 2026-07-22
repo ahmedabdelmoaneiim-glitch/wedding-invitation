@@ -1,0 +1,307 @@
+/* style.css - ملف التنسيقات الموحد */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Tajawal', 'Segoe UI', sans-serif;
+}
+
+body {
+    background: linear-gradient(145deg, #fdf6f0 0%, #f8ede8 100%);
+    color: #2d1b12;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* الحاوية الرئيسية */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 32px;
+    padding: 30px 25px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 215, 200, 0.3);
+}
+
+/* العناوين */
+h1 {
+    font-size: 2.2rem;
+    text-align: center;
+    color: #4a2c1e;
+    margin-bottom: 8px;
+}
+
+h1 span {
+    color: #d4a373;
+}
+
+h2 {
+    font-size: 1.8rem;
+    color: #4a2c1e;
+    margin: 25px 0 15px;
+    border-right: 5px solid #d4a373;
+    padding-right: 15px;
+}
+
+h3 {
+    font-size: 1.3rem;
+    color: #5a3a2a;
+    margin: 15px 0 10px;
+}
+
+/* النصوص */
+p {
+    line-height: 1.8;
+    color: #3d2b20;
+    font-size: 1.05rem;
+}
+
+/* البطاقات والصناديق */
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(212, 163, 115, 0.15);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(212, 163, 115, 0.15);
+}
+
+/* الأزرار */
+.btn {
+    display: inline-block;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, #d4a373, #b8835a);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(212, 163, 115, 0.3);
+}
+
+.btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 25px rgba(212, 163, 115, 0.4);
+}
+
+.btn-whatsapp {
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+}
+
+/* قائمة الباقات */
+.package {
+    border: 2px solid #f0e0d8;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 15px 0;
+    transition: all 0.3s ease;
+}
+
+.package.vip {
+    border-color: #d4a373;
+    background: linear-gradient(135deg, #fffaf5, #fdf6f0);
+}
+
+.price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #4a2c1e;
+}
+
+.price span {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #8a7a72;
+}
+
+/* نموذج الطلب */
+.form-group {
+    margin: 20px 0;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #4a2c1e;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #e8ddd8;
+    border-radius: 16px;
+    font-size: 1rem;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #d4a373;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(212, 163, 115, 0.1);
+}
+
+/* العدّاد التنازلي */
+.countdown {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 25px 0;
+}
+
+.countdown-item {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 16px;
+    text-align: center;
+    min-width: 70px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.countdown-item .number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #4a2c1e;
+}
+
+.countdown-item .label {
+    font-size: 0.8rem;
+    color: #8a7a72;
+}
+
+/* معرض الصور */
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.gallery img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.gallery img:hover {
+    transform: scale(1.02);
+}
+
+/* لوحة التحكم */
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #d4a373;
+}
+
+/* جدول الطلبات */
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: right;
+    border-bottom: 1px solid #f0e0d8;
+}
+
+th {
+    background: #f8ede8;
+    font-weight: 600;
+}
+
+tr:hover {
+    background: #fdf6f0;
+}
+
+/* رسائل التنبيه */
+.alert {
+    padding: 15px 20px;
+    border-radius: 16px;
+    margin: 15px 0;
+}
+
+.alert-success {
+    background: #e6f7ec;
+    color: #1a7a4a;
+    border: 1px solid #b8e6cc;
+}
+
+.alert-error {
+    background: #fde8e8;
+    color: #a13a3a;
+    border: 1px solid #f5c2c2;
+}
+
+/* التوافق مع الموبايل */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px 15px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .countdown {
+        gap: 10px;
+    }
+    
+    .countdown-item {
+        padding: 10px 15px;
+        min-width: 55px;
+    }
+    
+    .countdown-item .number {
+        font-size: 1.5rem;
+    }
+    
+    .gallery {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        font-size: 1rem;
+    }
+}
