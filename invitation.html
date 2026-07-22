@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دعوة زفاف - نفرح</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ===== التنسيقات الخاصة بالدعوة المصرية ===== */
+        
+        /* الخلفية العامة */
+        .egyptian-invite {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #f5ede3 0%, #e8dccc 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: 'Tajawal', 'Arial', sans-serif;
+        }
+
+        /* بطاقة الدعوة - تحاكي ورق البردي */
+        .invitation-card-egypt {
+            max-width: 600px;
+            width: 100%;
+            background: linear-gradient(145deg, #fcf8f0, #f5ede3);
+            border: 8px solid #d4b28c;
+            border-radius: 24px;
+            padding: 40px 30px;
+            position: relative;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.15),
+                inset 0 0 60px rgba(212, 178, 140, 0.1);
+            overflow: hidden;
+        }
+
+        /* زخارف فرعونية (كورنيش) */
+        .egyptian-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: repeating-linear-gradient(
+                90deg,
+                #d4b28c 0px,
+                #d4b28c 15px,
+                #f5ede3 15px,
+                #f5ede3 20px,
+                #d4b28c 20px,
+                #d4b28c 35px
+            );
+            opacity: 0.6;
+        }
+
+        .egyptian-border-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: repeating-linear-gradient(
+                90deg,
+                #d4b28c 0px,
+                #d4b28c 15px,
+                #f5ede3 15px,
+                #f5ede3 20px,
+                #d4b28c 20px,
+                #d4b28c 35px
+            );
+            opacity: 0.6;
+        }
+
+        /* رمز اللوتس والكوبرا */
+        .symbol-top {
+            text-align: center;
+            font-size: 2.8rem;
+            color: #c9a87c;
+            letter-spacing: 15px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        /* النصوص الرئيسية */
+        .invite-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #3d2b1a;
+            text-align: center;
+            margin: 5px 0;
+            letter-spacing: 2px;
+        }
+
+        .invite-title span {
+            color: #c9a87c;
+            font-weight: 300;
+        }
+
+        .invite-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #7a6a5a;
+            margin-bottom: 25px;
+            border-top: 2px solid #e8dccc;
+            border-bottom: 2px solid #e8dccc;
+            padding: 10px 0;
+            letter-spacing: 3px;
+        }
+
+        /* أسماء العروسين - بالخط المصري التقليدي */
+        .couple-names {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #3d2b1a;
+            margin: 20px 0 10px;
+            font-family: 'Amiri', 'Tajawal', serif;
+        }
+
+        .couple-names .heart-icon {
+            color: #d4a373;
+            margin: 0 15px;
+            font-size: 2rem;
+        }
+
+        .couple-names .divider {
+            display: block;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #d4b28c, transparent);
+            margin: 10px auto;
+        }
+
+        /* تفاصيل الحفل */
+        .event-details {
+            background: rgba(255, 248, 240, 0.6);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 25px 0;
+            border: 1px solid #e8dccc;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 8px 0;
+            font-size: 1.15rem;
+            color: #3d2b1a;
+        }
+
+        .detail-item .icon {
+            font-size: 1.5rem;
+            color: #c9a87c;
+        }
+
+        /* عداد تنازلي مصري */
+        .countdown-egypt {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .countdown-egypt .item {
+            text-align: center;
+            background: #f5ede3;
+            padding: 12px 15px;
+            border-radius: 16px;
+            min-width: 65px;
+            border: 1px solid #e8dccc;
+        }
+
+        .countdown-egypt .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #3d2b1a;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .countdown-egypt .label {
+            font-size: 0.75rem;
+            color: #7a6a5a;
+            display: block;
+        }
+
+        /* الأزرار */
+        .btn-egypt {
+            display: inline-block;
+            padding: 14px 35px;
+            background: linear-gradient(135deg, #d4b28c, #c9a87c);
+            color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(201, 168, 124, 0.3);
+            margin: 5px;
+            min-width: 140px;
+        }
+
+        .btn-egypt:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(201, 168, 124, 0.4);
+        }
+
+        .btn-egypt-outline {
+            background: transparent;
+            color: #c9a87c;
+            border: 2px solid #c9a87c;
+            box-shadow: none;
+        }
+
+        .btn-egypt-outline:hover {
+            background: #c9a87c;
+            color: white;
+        }
+
+        /* رسالة تأكيد الحضور */
+        #rsvpMessage {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .rsvp-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .rsvp-decline {
+            background: #fbe9e7;
+            color: #c62828;
+        }
+
+        /* تذييل الدعوة */
+        .invite-footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #e8dccc;
+            font-size: 0.85rem;
+            color: #9a8a7a;
+        }
+
+        .invite-footer .qr-code {
+            font-size: 2rem;
+            margin: 5px 0;
+            letter-spacing: 5px;
+        }
+
+        /* توافق الموبايل */
+        @media (max-width: 500px) {
+            .invitation-card-egypt {
+                padding: 25px 15px;
+            }
+            .invite-title {
+                font-size: 2rem;
+            }
+            .couple-names {
+                font-size: 1.8rem;
+            }
+            .countdown-egypt {
+                gap: 10px;
+            }
+            .countdown-egypt .item {
+                padding: 8px 10px;
+                min-width: 50px;
+            }
+            .countdown-egypt .number {
+                font-size: 1.5rem;
+            }
+            .btn-egypt {
+                padding: 12px 20px;
+                font-size: 0.95rem;
+                min-width: 110px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="egyptian-invite">
+        <div class="invitation-card-egypt">
+
+            <!-- الزخارف العلوية والسفلية -->
+            <div class="egyptian-border"></div>
+            <div class="egyptian-border-bottom"></div>
+
+            <!-- رموز اللوتس -->
+            <div class="symbol-top">𓆸 𓆣 𓆸</div>
+
+            <!-- محتوى الدعوة -->
+            <div class="invite-title">
+                دعوة <span>زفاف</span>
+            </div>
+            <div class="invite-subtitle">
+                ✦ بَرَكَةُ المِصْرِيِّينَ ✦
+            </div>
+
+            <!-- أسماء العروسين -->
+            <div class="couple-names">
+                أحمد
+                <span class="heart-icon">❤️</span>
+                مريم
+                <span class="divider"></span>
+            </div>
+
+            <!-- تفاصيل الحفل -->
+            <div class="event-details">
+                <div class="detail-item">
+                    <span class="icon">📅</span>
+                    <span>الجمعة ١٥ أكتوبر ٢٠٢٦</span>
+                </div>
+                <div class="detail-item">
+                    <span class="icon">⏰</span>
+                    <span>الساعة ٨:٠٠ مساءً</span>
+                </div>
+                <div class="detail-item">
+                    <span class="icon">📍</span>
+                    <span>قاعة الزفاف الكبرى - القاهرة</span>
+                </div>
+            </div>
+
+            <!-- عداد تنازلي -->
+            <div class="countdown-egypt">
+                <div class="item">
+                    <span class="number" id="days">--</span>
+                    <span class="label">أيام</span>
+                </div>
+                <div class="item">
+                    <span class="number" id="hours">--</span>
+                    <span class="label">ساعات</span>
+                </div>
+                <div class="item">
+                    <span class="number" id="minutes">--</span>
+                    <span class="label">دقائق</span>
+                </div>
+                <div class="item">
+                    <span class="number" id="seconds">--</span>
+                    <span class="label">ثواني</span>
+                </div>
+            </div>
+
+            <!-- أزرار الإجراءات -->
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 10px;">
+                <a href="https://maps.google.com" target="_blank" class="btn-egypt btn-egypt-outline">
+                    🗺️ الخريطة
+                </a>
+                <button onclick="rsvp('حضور')" class="btn-egypt">
+                    ✅ تأكيد الحضور
+                </button>
+                <button onclick="rsvp('اعتذار')" class="btn-egypt" style="background: #b0a090; box-shadow: none;">
+                    ❌ اعتذار
+                </button>
+            </div>
+
+            <!-- رسالة RSVP -->
+            <div id="rsvpMessage"></div>
+
+            <!-- رمز QR Code (تخيلي) -->
+            <div class="invite-footer">
+                <div class="qr-code">⬛⬛⬛⬛⬛</div>
+                <p style="margin: 5px 0;">امسح الكود للمزيد من التفاصيل</p>
+                <p style="font-size: 0.8rem; color: #b0a090;">© 2026 تصميم دعوات زفاف - كل الحقوق محفوظة</p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ===== العداد التنازلي =====
+        function startCountdown() {
+            // غير التاريخ ده للتاريخ الفعلي للزفاف
+            const weddingDate = new Date('2026-10-15T20:00:00').getTime();
+            const now = new Date().getTime();
+            const diff = weddingDate - now;
+
+            if (diff <= 0) {
+                document.getElementById('days').textContent = '🎉';
+                document.getElementById('hours').textContent = '';
+                document.getElementById('minutes').textContent = '';
+                document.getElementById('seconds').textContent = '';
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+        }
+
+        startCountdown();
+        setInterval(startCountdown, 1000);
+
+        // ===== دالة RSVP =====
+        function rsvp(status) {
+            const msgDiv = document.getElementById('rsvpMessage');
+            if (status === 'حضور') {
+                msgDiv.innerHTML = '🎉 شكراً لتأكيد حضورك! في انتظارك يوم الفرح.';
+                msgDiv.className = 'rsvp-success';
+            } else {
+                msgDiv.innerHTML = '😔 نشعر بالأسف لاعتذارك، سنفتقدك.';
+                msgDiv.className = 'rsvp-decline';
+            }
+
+            // إرسال الرد لـ localStorage (تقدر تطورها لـ API بعدين)
+            const rsvpData = {
+                event: 'أحمد ومريم',
+                status: status,
+                date: new Date().toISOString()
+            };
+            localStorage.setItem('lastRSVP', JSON.stringify(rsvpData));
+            console.log('تم تسجيل الرد:', rsvpData);
+        }
+    </script>
+
+</body>
+</html>
