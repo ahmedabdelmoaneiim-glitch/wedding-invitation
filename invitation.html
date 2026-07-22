@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دعوة زفاف - Zohan & Rose</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;600;700&family=Great+Vibes&family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-cream: #f9f6f0;
+            --gold: #c5a059;
+            --dark-gold: #8c6f37;
+            --text-dark: #2c2520;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0d0d0f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Cinzel', 'Tajawal', serif;
+            overflow-x: hidden;
+        }
+
+        /* شاشة الهاتف */
+        .phone-frame {
+            width: 100%;
+            max-width: 414px;
+            height: 100vh;
+            max-height: 896px;
+            background: var(--bg-cream);
+            position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            border-radius: 20px;
+        }
+
+        /* ================= 1. واجهة الظرف ================= */
+        #envelopeOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #e6dfd3;
+            background-image: radial-gradient(rgba(0,0,0,0.06) 1px, transparent 0);
+            background-size: 10px 10px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            width: 320px;
+            height: 480px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        /* جسم الظرف */
+        .envelope-base {
+            width: 100%;
+            height: 100%;
+            background: #FAF7F2;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            overflow: hidden;
+        }
+
+        /* نقشة ورقية بارزة شفافة */
+        .paper-texture {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0.12;
+            background-image: radial-gradient(#8c6f37 0.8px, transparent 0.8px), radial-gradient(#8c6f37 0.8px, #FAF7F2 0.8px);
+            background-size: 16px 16px;
+            background-position: 0 0, 8px 8px;
+        }
+
+        /* طية الظرف السفلية */
+        .envelope-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 260px;
+            background: linear-gradient(0deg, #F3ECE0 0%, #E7DDCF 100%);
+            clip-path: polygon(0 100%, 100% 100%, 50% 25%);
+            z-index: 2;
+        }
+
+        /* طية الظرف العلوية المتحركة */
+        .envelope-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(180deg, #FFFFFF 0%, #EFE7DA 100%);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transform-origin: top;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 3;
+            filter: drop-shadow(0px 8px 12px rgba(0, 0, 0, 0.15));
+        }
+
+        /* الختم الشمعي */
+        .wax-seal {
+            position: absolute;
+            top: 235px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at 35% 35%, #8B1A2B 0%, #4A0812 70%, #2A0208 100%);
+            border-radius: 48% 52% 45% 55% / 52% 48% 52% 48%;
+            z-index: 4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 
+                0 10px 22px rgba(0,0,0,0.38),
+                inset 0 3px 6px rgba(255, 255, 255, 0.4),
+                inset 0 -5px 10px rgba(0, 0, 0, 0.6);
+            border: 1px solid #63101D;
+            transition: all 0.5s ease;
+        }
+
+        .wax-seal span {
+            font-family: 'Great Vibes', cursive;
+            color: #F8E3BD;
+            font-size: 30px;
+            text-shadow: 1px 2px 4px rgba(0,0,0,0.8);
+            user-select: none;
+        }
+
+        .tap-text {
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--dark-gold);
+            text-transform: uppercase;
+            animation: blink 1.6s infinite alternate;
+        }
+
+        @keyframes blink { 0% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* حركة فتح الظرف */
+        .envelope-wrapper.open .envelope-top {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .envelope-wrapper.open .wax-seal {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.3);
+            pointer-events: none;
+        }
+
+        /* ================= 2. محتوى الدعوة ================= */
+        .invitation-body {
+            opacity: 0;
+            transition: opacity 1s ease 0.6s;
+            padding: 35px 20px 60px 20px;
+            text-align: center;
+        }
+
+        .opened .invitation-body {
+            opacity: 1;
+        }
+
+        /* القوس المذهب */
+        .arch-card {
+            border: 1.5px solid var(--gold);
+            border-radius: 170px 170px 0 0;
+            padding: 45px 18px 35px 18px;
+            background: linear-gradient(180deg, #FCFBF8 0%, #F6F1E7 100%);
+            box-shadow: 0 10px 30px rgba(197, 160, 89, 0.12);
+            margin-bottom: 30px;
+        }
+
+        .wedding-header {
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .names {
+            font-family: 'Great Vibes', cursive;
+            font-size: 52px;
+            color: var(--text-dark);
+            margin: 10px 0;
+            line-height: 1.1;
+        }
+
+        .date-text {
+            font-size: 14px;
+            letter-spacing: 3px;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        /* قسم الآية */
+        .quran-box {
+            margin: 30px 0;
+            padding: 0 10px;
+        }
+
+        .bismillah {
+            font-family: 'Amiri', serif;
+            font-size: 22px;
+            color: var(--gold);
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        .verse {
+            font-family: 'Amiri', serif;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #55483d;
+        }
+
+        /* الزرار المعتمد */
+        .confirm-button {
+            background: linear-gradient(135deg, #c5a059 0%, #9e7d3b 100%);
+            color: #ffffff;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 15px;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(197, 160, 89, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .confirm-button:active {
+            transform: scale(0.96);
+        }
+
+        /* زر الصوت */
+        .audio-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 45px;
+            height: 45px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-frame" id="mainPhone">
+
+        <div id="envelopeOverlay">
+            <div class="envelope-wrapper" id="envelopeCard" onclick="openEnvelope()">
+                <div class="envelope-base">
+                    <div class="paper-texture"></div>
+                    <div class="envelope-bottom"></div>
+                    <div class="envelope-top"></div>
+                    
+                    <div class="wax-seal">
+                        <span>R&Z</span>
+                    </div>
+
+                    <div class="tap-text">اضغط لفتح الدعوة</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="audio-btn" onclick="toggleMusic()" id="musicBtn">🎵</div>
+        <audio id="bgMusic" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+
+        <div class="invitation-body">
+            
+            <div class="arch-card">
+                <div class="wedding-header">WEDDING DAY</div>
+                <div class="date-text">27 . 09 . 2026</div>
+                <div class="names">Zohan<br>&<br>Rose</div>
+                
+                <svg width="100" height="50" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin: 10px auto; display: block;">
+                    <path d="M60 70 C70 50, 90 50, 95 70 C80 80, 65 80, 60 70 Z" fill="#c5a059" opacity="0.8"/>
+                    <path d="M140 70 C130 50, 110 50, 105 70 C120 80, 135 80, 140 70 Z" fill="#c5a059" opacity="0.8"/>
+                </svg>
+            </div>
+
+            <div class="quran-box">
+                <div class="bismillah">بسم الله الرحمن الرحيم</div>
+                <p class="verse">
+                    "وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً"
+                </p>
+            </div>
+
+            <div style="margin: 30px 0;">
+                <button class="confirm-button" onclick="alert('تم تأكيد حضورك بنجاح!')">تأكيد الحضور</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        let music = document.getElementById('bgMusic');
+        let playing = false;
+
+        function openEnvelope() {
+            const card = document.getElementById('envelopeCard');
+            const overlay = document.getElementById('envelopeOverlay');
+            const phone = document.getElementById('mainPhone');
+
+            card.classList.add('open');
+
+            music.play().then(() => {
+                playing = true;
+                document.getElementById('musicBtn').innerText = '⏸️';
+            }).catch(() => {});
+
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                overlay.style.transform = 'scale(1.04)';
+                phone.classList.add('opened');
+
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 800);
+            }, 650);
+        }
+
+        function toggleMusic() {
+            if (playing) {
+                music.pause();
+                document.getElementById('musicBtn').innerText = '🎵';
+                playing = false;
+            } else {
+                music.play();
+                document.getElementById('musicBtn').innerText = '⏸️';
+                playing = true;
+            }
+        }
+    </script>
+</body>
+</html>
