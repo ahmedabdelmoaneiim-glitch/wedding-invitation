@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دعوة زفاف إلكترونية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Reem+Kufi:wght@500;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary-gold: #d4af37;
+            --gold-light: #f3e5ab;
+            --bg-dark: #0f172a;
+            --text-main: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Amiri', serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 20px 10px;
+            transition: background 0.5s ease;
+        }
+
+        /* الثيمات المختلفة */
+        body.theme-gold_animated {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --primary-gold: #d4af37;
+        }
+
+        body.theme-pink_animated {
+            background: linear-gradient(135deg, #2d1b2e 0%, #4a1525 100%);
+            --primary-gold: #f472b6;
+            --gold-light: #fbcfe8;
+        }
+
+        body.theme-dark_animated {
+            background: linear-gradient(135deg, #000000 0%, #18181b 100%);
+            --primary-gold: #e2e8f0;
+            --gold-light: #ffffff;
+        }
+
+        /* خلفية العناصر المتساقطة المتحركة */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            color: var(--primary-gold);
+            opacity: 0.6;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0.8; }
+            100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* كارت الدعوة الرئيسي */
+        .invitation-card {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 480px;
+            padding: 35px 22px;
+            border: 2px solid var(--primary-gold);
+            border-radius: 24px;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.2);
+            text-align: center;
+            animation: floatUp 1.2s ease-out;
+        }
+
+        @keyframes floatUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-title {
+            color: var(--primary-gold);
+            font-size: 18px;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .couple-names {
+            font-family: 'Reem Kufi', sans-serif;
+            font-size: 34px;
+            color: var(--gold-light);
+            margin: 18px 0;
+            line-height: 1.3;
+            text-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+        }
+
+        .details-box {
+            margin: 20px 0;
+            padding: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .details-text {
+            font-size: 18px;
+            color: #e2e8f0;
+            margin-bottom: 8px;
+        }
+
+        .venue-text {
+            font-size: 16px;
+            color: var(--primary-gold);
+            font-weight: bold;
+        }
+
+        /* العداد التنازلي */
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 25px 0;
+            direction: ltr;
+        }
+
+        .time-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--primary-gold);
+            padding: 8px 12px;
+            border-radius: 12px;
+            min-width: 60px;
+        }
+
+        .time-card span {
+            display: block;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--gold-light);
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .time-card label {
+            font-size: 11px;
+            color: #cbd5e1;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        /* الأزرار Toggling & Links */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-gold), #aa8c2c);
+            color: #000;
+            font-weight: bold;
+            font-family: 'Tajawal', sans-serif;
+            padding: 14px;
+            border-radius: 30px;
+            text-decoration: none;
+            margin-top: 12px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-action:active {
+            transform: scale(0.98);
+        }
+
+        .music-btn {
+            background: rgba(255,255,255,0.1);
+            color: var(--gold-light);
+            border: 1px solid var(--primary-gold);
+        }
+
+        .message-box {
+            margin-top: 20px;
+            font-style: italic;
+            font-size: 15px;
+            color: #cbd5e1;
+            background: rgba(0,0,0,0.2);
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        /* رسالة التعطيل */
+        #disabledMessage {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 16px;
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            font-family: 'Tajawal', sans-serif;
+        }
+    </style>
+</head>
+<body class="theme-gold_animated">
+
+    <!-- الخلفية التفاعلية -->
+    <div class="particles-container" id="particles"></div>
+
+    <!-- كارت الدعوة -->
+    <div class="invitation-card" id="cardContent" style="display: none;">
+        <p class="header-title" id="titleDisplay">✨ نتشرف بدعوتكم ✨</p>
+        <p style="font-size: 16px; color: #cbd5e1;">لحضور حفل زفاف</p>
+        
+        <h1 class="couple-names" id="namesDisplay">...</h1>
+
+        <div class="details-box">
+            <p class="details-text" id="dateDisplay">...</p>
+            <p class="venue-text" id="venueDisplay">...</p>
+        </div>
+
+        <!-- العداد التنازلي -->
+        <div class="countdown">
+            <div class="time-card"><span id="days">00</span><label>يوم</label></div>
+            <div class="time-card"><span id="hours">00</span><label>ساعة</label></div>
+            <div class="time-card"><span id="minutes">00</span><label>دقيقة</label></div>
+            <div class="time-card"><span id="seconds">00</span><label>ثانية</label></div>
+        </div>
+
+        <!-- أزرار التفاعل -->
+        <button id="musicToggle" class="btn-action music-btn" style="display: none;" onclick="toggleAudio()">
+            🎵 تشغيل الموسيقى
+        </button>
+
+        <a id="mapBtn" href="#" target="_blank" class="btn-action" style="display: none;">
+            📍 موقع الحفل على Google Maps
+        </a>
+
+        <div id="storyBox" class="message-box" style="display: none;"></div>
+    </div>
+
+    <!-- رسالة إذا كانت الدعوة معطلة -->
+    <div id="disabledMessage">
+        <h2 style="font-size: 22px; margin-bottom: 10px;">⚠️ هذه الدعوة غير متاحة حالياً</h2>
+        <p>يرجى التواصل مع صاحب الدعوة أو إدارة المنصة للتفعيل.</p>
+    </div>
+
+    <audio id="bgMusic" loop></audio>
+
+<script>
+    const SUPABASE_URL = 'https://dwogzofnirelsuzmcwzl.supabase.co';
+    const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY'; // ضع مفتاح anon الخاص بك هنا
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let audio = document.getElementById('bgMusic');
+    let isPlaying = false;
+
+    // جلب معرّف الدعوة من الرابط (e.g. ?id=ahmed-sara)
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteSlug = urlParams.get('id');
+
+    async function fetchInvitation() {
+        if (!inviteSlug) {
+            showDisabled('لم يتم تحديد رابط الدعوة!');
+            return;
+        }
+
+        const { data, error } = await supabase
+            .from('invitations')
+            .select('*')
+            .eq('slug', inviteSlug)
+            .single();
+
+        if (error || !data) {
+            showDisabled('الدعوة غير موجودة أو تم حذفها.');
+            return;
+        }
+
+        if (!data.is_active) {
+            showDisabled('تم إيقاف هذه الدعوة من قبل الإدارة.');
+            return;
+        }
+
+        // عرض البيانات
+        document.body.className = `theme-${data.theme || 'gold_animated'}`;
+        document.getElementById('titleDisplay').innerText = data.title || '✨ نتشرف بدعوتكم ✨';
+        document.getElementById('namesDisplay').innerText = data.groom_bride_names;
+        document.getElementById('dateDisplay').innerText = data.event_date || '';
+        document.getElementById('venueDisplay').innerText = data.venue || '';
+
+        if (data.map_link) {
+            const mapBtn = document.getElementById('mapBtn');
+            mapBtn.href = data.map_link;
+            mapBtn.style.display = 'inline-flex';
+        }
+
+        if (data.music_url) {
+            audio.src = data.music_url;
+            document.getElementById('musicToggle').style.display = 'inline-flex';
+        }
+
+        if (data.story_text) {
+            const storyBox = document.getElementById('storyBox');
+            storyBox.innerText = `"${data.story_text}"`;
+            storyBox.style.display = 'block';
+        }
+
+        // تشغيل الأنيميشن والعداد
+        initParticles(data.theme);
+        initCountdown(data.event_date);
+
+        document.getElementById('cardContent').style.display = 'block';
+    }
+
+    function showDisabled(msg) {
+        document.getElementById('cardContent').style.display = 'none';
+        const msgDiv = document.getElementById('disabledMessage');
+        if (msg) msgDiv.querySelector('p').innerText = msg;
+        msgDiv.style.display = 'block';
+    }
+
+    function initParticles(theme) {
+        const container = document.getElementById('particles');
+        const symbol = theme === 'pink_animated' ? '🌸' : (theme === 'dark_animated' ? '✨' : '❄');
+        for (let i = 0; i < 20; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.innerText = symbol;
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            p.style.fontSize = (Math.random() * 12 + 12) + 'px';
+            container.appendChild(p);
+        }
+    }
+
+    function toggleAudio() {
+        const btn = document.getElementById('musicToggle');
+        if (isPlaying) {
+            audio.pause();
+            btn.innerText = '🎵 تشغيل الموسيقى';
+        } else {
+            audio.play();
+            btn.innerText = '⏸️ إيقاف الموسيقى';
+        }
+        isPlaying = !isPlaying;
+    }
+
+    function initCountdown(dateStr) {
+        // إذا كان هناك تاريخ محدد، نحسب الوقت وإلا نضع موعد افتراضي
+        const target = dateStr ? new Date(dateStr).getTime() : new Date().getTime() + (7 * 24 * 60 * 60 * 1000);
+        
+        setInterval(() => {
+            const now = new Date().getTime();
+            const diff = target - now;
+
+            if (diff > 0) {
+                document.getElementById('days').innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+                document.getElementById('hours').innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                document.getElementById('minutes').innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                document.getElementById('seconds').innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
+            }
+        }, 1000);
+    }
+
+    fetchInvitation();
+</script>
+</body>
+</html>

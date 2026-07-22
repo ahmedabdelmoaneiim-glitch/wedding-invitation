@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الأدمن - إدارة دعوات الزفاف</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #d4af37;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+        body { background: var(--bg); padding: 20px 10px; color: #334155; }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 { font-size: 20px; font-weight: 800; color: var(--accent); }
+
+        .card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .card h2 { font-size: 16px; margin-bottom: 15px; color: #0f172a; border-bottom: 2px solid var(--accent); padding-bottom: 5px; display: inline-block; }
+
+        .grid-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-size: 13px; font-weight: 700; }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-primary { background: var(--accent); color: #000; }
+        .btn-primary:hover { background: #b89528; }
+
+        /* جدول الدعوات */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { padding: 12px 10px; text-align: right; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; font-weight: 700; }
+
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+        .badge-active { background: #dcfce7; color: #15803d; }
+        .badge-inactive { background: #fee2e2; color: #b91c1c; }
+
+        .btn-action { padding: 5px 10px; border-radius: 6px; border: none; font-size: 12px; cursor: pointer; }
+        .btn-toggle { background: #3b82f6; color: white; }
+        .btn-delete { background: var(--danger); color: white; margin-right: 5px; }
+
+        /* قفل الأمان */
+        #loginOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex; justify-content: center; align-items: center; z-index: 999;
+        }
+        .login-box { background: white; padding: 30px; border-radius: 12px; text-align: center; max-width: 350px; width: 90%; }
+    </style>
+</head>
+<body>
+
+<!-- نافذة تسجيل الدخول للأدمن -->
+<div id="loginOverlay">
+    <div class="login-box">
+        <h2 style="margin-bottom: 15px; border:none;">🔐 دخول لوحة التحكم</h2>
+        <input type="password" id="adminPass" placeholder="أدخل كلمة المرور السرية" style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ccc; text-align: center;">
+        <button class="btn btn-primary" style="width: 100%;" onclick="checkAuth()">دخول</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="header">
+        <h1>👑 لوحة إداره منصة الدعوات (Admin Panel)</h1>
+        <span id="totalCount">إجمالي الدعوات: 0</span>
+    </div>
+
+    <!-- نموذج إنشاء/تعديل دعوة -->
+    <div class="card">
+        <h2>✨ إنشاء دعوة جديدة لعميل</h2>
+        <form id="addInviteForm">
+            <div class="grid-form">
+                <div class="form-group">
+                    <label>أسماء العروسين *</label>
+                    <input type="text" id="names" placeholder="مثال: أحمد و سارة" required oninput="autoSlug()">
+                </div>
+                <div class="form-group">
+                    <label>الرابط المخصص (Slug) *</label>
+                    <input type="text" id="slug" placeholder="ahmed-sara" required style="direction: ltr;">
+                </div>
+                <div class="form-group">
+                    <label>التاريخ والموعد</label>
+                    <input type="text" id="event_date" placeholder="الخميس 15 أكتوبر 2026 - 8 مساءً">
+                </div>
+                <div class="form-group">
+                    <label>مكان الحفل (القاعة/الفندق)</label>
+                    <input type="text" id="venue" placeholder="فندق لاجونا فيستا">
+                </div>
+                <div class="form-group">
+                    <label>رابط Google Maps</label>
+                    <input type="url" id="map_link" placeholder="https://maps.app.goo.gl/..." style="direction: ltr;">
+                </div>
+                <div class="form-group">
+                    <label>رابط أغنية الدعوة (MP3)</label>
+                    <input type="url" id="music_url" placeholder="https://..." style="direction: ltr;">
+                </div>
+                <div class="form-group">
+                    <label>اختيار القالب المتحرك (Theme)</label>
+                    <select id="theme">
+                        <option value="gold_animated">✨ الملكي الذهبي (متحرك)</option>
+                        <option value="pink_animated">🌸 الوردي الرومانسي (متحرك)</option>
+                        <option value="dark_animated">🌙 الأسود الأنيق (متحرك)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top: 15px;">
+                <label>رسالة العروسين للضيوف</label>
+                <textarea id="story_text" rows="2" placeholder="كلمة ترحيبية خاصة..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top: 15px; width: 100%;">🚀 حفظ ونشر الدعوة فوراً</button>
+        </form>
+    </div>
+
+    <!-- جدول إدارة كافة الدعوات -->
+    <div class="card">
+        <h2>📦 قائمة جميع الدعوات الحالية</h2>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>الرابط (Slug)</th>
+                        <th>العروسين</th>
+                        <th>القالب</th>
+                        <th>الحالة</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="invitationsTable">
+                    <tr><td colspan="5" style="text-align: center;">جاري تحميل البيانات...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // إعدادات Supabase
+    const SUPABASE_URL = 'https://dwogzofnirelsuzmcwzl.supabase.co';
+    const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY'; // استبدل المفتاح الخاص بك هنا
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const ADMIN_PASSWORD = "123"; // كلمة المرور الخاصة بك للدخول للوحة (يمكنك تغييرها)
+
+    function checkAuth() {
+        const inputPass = document.getElementById('adminPass').value;
+        if (inputPass === ADMIN_PASSWORD) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            loadInvitations();
+        } else {
+            alert('كلمة المرور غير صحيحة!');
+        }
+    }
+
+    function autoSlug() {
+        const names = document.getElementById('names').value;
+        document.getElementById('slug').value = names.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w\u0600-\u06FF-]/g, '');
+    }
+
+    // حفظ دعوة جديدة
+    document.getElementById('addInviteForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+            slug: document.getElementById('slug').value.trim(),
+            groom_bride_names: document.getElementById('names').value.trim(),
+            event_date: document.getElementById('event_date').value.trim(),
+            venue: document.getElementById('venue').value.trim(),
+            map_link: document.getElementById('map_link').value.trim(),
+            music_url: document.getElementById('music_url').value.trim(),
+            theme: document.getElementById('theme').value,
+            story_text: document.getElementById('story_text').value.trim(),
+            is_active: true
+        };
+
+        const { data, error } = await supabase.from('invitations').insert([payload]);
+        if (error) {
+            alert('خطأ أثناء الحفظ: ' + error.message);
+        } else {
+            alert('تم إضافة الدعوة بنجاح!');
+            document.getElementById('addInviteForm').reset();
+            loadInvitations();
+        }
+    });
+
+    // جلب وحساب الدعوات
+    async function loadInvitations() {
+        const { data, error } = await supabase.from('invitations').select('*').order('created_at', { ascending: false });
+        if (error) return alert('خطأ في التحميل');
+
+        document.getElementById('totalCount').innerText = `إجمالي الدعوات: ${data.length}`;
+        const tbody = document.getElementById('invitationsTable');
+        tbody.innerHTML = '';
+
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            const inviteUrl = `${window.location.origin}/invitation.html?id=${item.slug}`;
+            
+            row.innerHTML = `
+                <td><a href="${inviteUrl}" target="_blank" style="color:#2563eb; text-decoration:none; font-weight:bold;">${item.slug}</a></td>
+                <td>${item.groom_bride_names}</td>
+                <td>${item.theme}</td>
+                <td>
+                    <span class="badge ${item.is_active ? 'badge-active' : 'badge-inactive'}">
+                        ${item.is_active ? 'شغال' : 'معطل'}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn-action btn-toggle" onclick="toggleStatus(${item.id}, ${item.is_active})">
+                        ${item.is_active ? 'إيقاف' : 'تفعيل'}
+                    </button>
+                    <button class="btn-action btn-delete" onclick="deleteInvite(${item.id})">حذف</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // تغيير حالة الدعوة (تفعيل / إيقاف)
+    async function toggleStatus(id, currentStatus) {
+        await supabase.from('invitations').update({ is_active: !currentStatus }).eq('id', id);
+        loadInvitations();
+    }
+
+    // حذف دعوة
+    async function deleteInvite(id) {
+        if (confirm('هل أنت تأكد من حذف هذه الدعوة نهائياً؟')) {
+            await supabase.from('invitations').delete().eq('id', id);
+            loadInvitations();
+        }
+    }
+</script>
+</body>
+</html>
